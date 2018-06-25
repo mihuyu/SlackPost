@@ -5,4 +5,5 @@
     <string name="post_failed">メッセージの投稿に失敗しました。</string>
     <string name="post_duplicate">メッセージが重複しています。</string>
     <string name="data_not_found">channelが存在しません。</string>
+    <string name="no_post">設定が行われていない為、投稿しませんでした。</string>
 </resources>

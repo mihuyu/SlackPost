@@ -43,13 +43,13 @@ public class TransparentActivity extends Activity {
         // 設定値取得
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String token = sp.getString(CommonConst.KEY_TOKEN, null);
-        String channel = sp.getString(CommonConst.KEY_CHANNEL, null); // default is #illust("CBB1P1V40").
+        String channel = sp.getString(CommonConst.KEY_CHANNEL, null);
 
         if (token!= null && channel != null) {
             // slack request
             slackRequest.execute(token, channel, param);
         } else {
-            Toast.makeText(getApplicationContext(), "設定が行われていない為、投稿しませんでした。", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.no_post, Toast.LENGTH_SHORT).show();
         }
 
 
