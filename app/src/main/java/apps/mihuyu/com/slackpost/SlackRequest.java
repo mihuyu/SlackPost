@@ -39,9 +39,9 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
     static {
         LIST_ICON = new HashMap<>();
         //"\uD83C\uDF0F"  = ちきゅう(🌏)
-        LIST_ICON.put("channels", "\uD83C\uDF0F");
+        LIST_ICON.put(CommonConst.RESPONSE_KEY_CHANNELS,"\uD83C\uDF0F");
         //"\uD83D\uDD12" = かぎ(🔒)
-        LIST_ICON.put("groups", "\uD83D\uDD12");
+        LIST_ICON.put(CommonConst.RESPONSE_KEY_GROUPS, "\uD83D\uDD12");
     }
 
     // 非同期処理
@@ -87,7 +87,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         String result = null;
 
         //token
-        String token = "token=";
+        String token = CommonConst.QUERY_TOKEN;
 
         // channels.list or groups.list
         StringBuilder list = new StringBuilder();
@@ -106,7 +106,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
             con = (HttpURLConnection) url.openConnection();
 
             // request POST
-            con.setRequestMethod("GET");
+            con.setRequestMethod(CommonConst.HTTP_GET);
 
             // no Redirects
             con.setInstanceFollowRedirects(false);
@@ -178,21 +178,16 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
     private String searchMessages(String token_val, String param) {
         String result = null;
 
-        // urlのみに変換
-        int startIndex = param.indexOf("http");
-        param = param.substring(startIndex);
-        // URLのqueryを削除する
-        param = param.replaceAll("\\?.+", "");
-        // "/photo/1"を削除する
-        param = param.replaceAll("\\/photo\\/1", "");
+        // url変換
+        String convertUrl = CommonUtil.convertTwitterURLPretty(param);
 
         //token
-        String token = "token=";
+        String token = CommonConst.QUERY_TOKEN;
 
         // 重複Postを避けるため、全体検索→検索結果0件の場合PostMessageを実施する。
         // search
         String base_url_messages = CommonConst.URL_SEARCH_MESSAGES;
-        String query = "query=";
+        String query = CommonConst.QUERY_SEARCHQUERY;
         StringBuilder search_url = new StringBuilder();
         search_url.append(base_url_messages);
         search_url.append(HATENA);
@@ -200,7 +195,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         search_url.append(token_val);
         search_url.append(AND);
         search_url.append(query);
-        search_url.append(param);
+        search_url.append(convertUrl);
 
         HttpURLConnection con = null;
 
@@ -212,7 +207,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
             con = (HttpURLConnection) url.openConnection();
 
             // request POST
-            con.setRequestMethod("GET");
+            con.setRequestMethod(CommonConst.HTTP_GET);
 
             // no Redirects
             con.setInstanceFollowRedirects(false);
@@ -276,22 +271,17 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
     private String chatPostMessage(String token_val, String channel_id, String param) {
         String result = null;
 
-        // urlのみに変換
-        int startIndex = param.indexOf("http");
-        param = param.substring(startIndex);
-        // URLのqueryを削除する
-        param = param.replaceAll("\\?.+", "");
-        // "/photo/1"を削除する
-        param = param.replaceAll("\\/photo\\/1", "");
+        // url変換
+        String convertUrl = CommonUtil.convertTwitterURLPretty(param);
 
         //token
-        String token = "token=";
+        String token = CommonConst.QUERY_TOKEN;
 
         // post message
         String base_url_postMessage = CommonConst.URL_CHAT_POSTMESSAGE;
-        String channel = "channel=";
-        String as_user = "as_user=true";
-        String text = "text=";
+        String channel = CommonConst.QUERY_CHANNEL;
+        String as_user = CommonConst.QUERY_ASUSER;
+        String text = CommonConst.QUERY_TEXT;
         StringBuilder post_url = new StringBuilder();
         post_url.append(base_url_postMessage);
         post_url.append(HATENA);
@@ -304,7 +294,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         post_url.append(as_user);
         post_url.append(AND);
         post_url.append(text);
-        post_url.append(param);
+        post_url.append(convertUrl);
 
         HttpURLConnection con = null;
 
@@ -316,7 +306,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
             con = (HttpURLConnection) url.openConnection();
 
             // request POST
-            con.setRequestMethod("GET");
+            con.setRequestMethod(CommonConst.HTTP_GET);
 
             // no Redirects
             con.setInstanceFollowRedirects(false);
