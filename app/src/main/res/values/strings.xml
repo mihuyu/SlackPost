@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">_SlackPost</string>
+    <string name="action_settings">Settings</string>
+    <string name="post_success">メッセージを投稿しました。</string>
+    <string name="post_failed">メッセージの投稿に失敗しました。</string>
+    <string name="post_duplicate">メッセージが重複しています。</string>
+    <string name="data_not_found">channelが存在しません。</string>
+</resources>
