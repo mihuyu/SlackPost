@@ -60,7 +60,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
             String channel_id = params[1];
             String param = params[2];
 
-            result = this.searchMessages(token_val, param);
+            result = this.searchMessages(token_val, channel_id, param);
             if (result == null) {
                 result = this.chatPostMessage(token_val, channel_id, param);
             }
@@ -136,7 +136,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
                     Log.d("debug", key + ".list:" + json_res_list);
 
                     // データなしの場合
-                    if (json_res_list.length() != 0) {
+                    if (json_res_list != null && json_res_list.length() != 0) {
                         // データを詰める
                         listMap = new HashMap<>();
                         for (int i = 0; i < json_res_list.length(); i++) {
@@ -175,7 +175,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         return result;
     }
 
-    private String searchMessages(String token_val, String param) {
+    private String searchMessages(String token_val, String channel_id, String param) {
         String result = null;
 
         // url変換
@@ -238,7 +238,20 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
                     if (json_res_message.getInt("total") == 0) {
                         // postMessageを実行するため、なにもしない。
                     } else {
-                        result= CommonConst.R_ID + R.string.post_duplicate;
+                        JSONArray matches = json_res_message.getJSONArray("matches");
+                        if (matches != null && matches.length() != 0) {
+                            for (int i = 0; i < matches.length(); i++) {
+                                JSONObject matche = (JSONObject) matches.get(i);
+                                if (matche != null) {
+                                    JSONObject channel = (JSONObject) matche.get("channel");
+                                    if (channel != null &&
+                                            channel_id.equals(channel.getString("id"))) {
+                                        // 同じChannelで重複している。
+                                        result= CommonConst.R_ID + R.string.post_duplicate;
+                                    }
+                                }
+                            }
+                        }
                     }
                 } else {
                     result= CommonConst.R_ID + R.string.post_failed;
