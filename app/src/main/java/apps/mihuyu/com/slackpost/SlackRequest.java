@@ -241,9 +241,9 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
                         JSONArray matches = json_res_message.getJSONArray("matches");
                         if (matches != null && matches.length() != 0) {
                             for (int i = 0; i < matches.length(); i++) {
-                                JSONObject matche = (JSONObject) matches.get(i);
-                                if (matche != null) {
-                                    JSONObject channel = (JSONObject) matche.get("channel");
+                                JSONObject match = (JSONObject) matches.get(i);
+                                if (match != null) {
+                                    JSONObject channel = (JSONObject) match.get("channel");
                                     if (channel != null &&
                                             channel_id.equals(channel.getString("id"))) {
                                         // 同じChannelで重複している。
@@ -336,8 +336,8 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
 
             try {
                 is = con.getInputStream();
-                String postmessage_res = InputStreamToString(is);
-                Log.d("debug","postmessage_res:" + postmessage_res);
+                String postMessage_res = InputStreamToString(is);
+                Log.d("debug","postMessage_res:" + postMessage_res);
             } catch (IOException ex) {
                 // GETリクエストエラー
                 ex.printStackTrace();
