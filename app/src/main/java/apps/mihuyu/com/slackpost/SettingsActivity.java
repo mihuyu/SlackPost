@@ -40,7 +40,7 @@ public class SettingsActivity extends PreferenceActivity {
         Preference channelPreference;
         List<String> entityList = new ArrayList<>();
         List<String> entityValueList = new ArrayList<>();
-        Map<String, String> channlesMap = new HashMap<String, String>();
+        Map<String, String> channelsMap = new HashMap<String, String>();
 
         private SlackRequest slackRequestChannels;
         private SlackRequest slackRequestGroups;
@@ -75,7 +75,7 @@ public class SettingsActivity extends PreferenceActivity {
             // 初期化
             entityList.clear();
             entityValueList.clear();
-            channlesMap.clear();
+            channelsMap.clear();
 
             // 非同期処理
             slackRequestChannels = new SlackRequest();
@@ -122,7 +122,7 @@ public class SettingsActivity extends PreferenceActivity {
         private void loadPreference(SharedPreferences sp, String key) {
             String spkey = sp.getString(key, "");
             if (CommonConst.KEY_CHANNEL.equals(key)) {
-                channelPreference.setSummary(channlesMap.get(spkey));
+                channelPreference.setSummary(channelsMap.get(spkey));
             }
             if (CommonConst.KEY_TOKEN.equals(key)) {
                 tokenPreference.setSummary(spkey);
@@ -132,7 +132,7 @@ public class SettingsActivity extends PreferenceActivity {
                         // 初期化
                         entityList.clear();
                         entityValueList.clear();
-                        channlesMap.clear();
+                        channelsMap.clear();
                         // slack request
                         slackRequestChannels.execute(spkey, CommonConst.URL_CHANNELS_LIST);
                         slackRequestGroups.execute(spkey, CommonConst.URL_GROUPS_LIST);
@@ -174,7 +174,7 @@ public class SettingsActivity extends PreferenceActivity {
                         for (String key :listMap.keySet()) {
                             entityList.add(listMap.get(key));
                             entityValueList.add(key);
-                            channlesMap.put(key, listMap.get(key));
+                            channelsMap.put(key, listMap.get(key));
                         }
 
                         ListPreference listPreference = (ListPreference)channelPreference;
