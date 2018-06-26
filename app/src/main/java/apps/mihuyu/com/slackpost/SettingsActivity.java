@@ -127,6 +127,14 @@ public class SettingsActivity extends PreferenceActivity {
             if (CommonConst.KEY_TOKEN.equals(key)) {
                 tokenPreference.setSummary(spkey);
                 if (spkey != null && !"".equals(spkey)) {
+                    if (AsyncTask.Status.FINISHED.equals(slackRequestChannels.getStatus())) {
+                        slackRequestChannels = new SlackRequest();
+                        slackRequestChannels.setListener(createListener());
+                    }
+                    if (AsyncTask.Status.FINISHED.equals(slackRequestGroups.getStatus())) {
+                        slackRequestGroups = new SlackRequest();
+                        slackRequestGroups.setListener(createListener());
+                    }
                     if (AsyncTask.Status.PENDING.equals(slackRequestChannels.getStatus()) &&
                             AsyncTask.Status.PENDING.equals(slackRequestGroups.getStatus())) {
                         // 初期化
@@ -164,6 +172,16 @@ public class SettingsActivity extends PreferenceActivity {
                             Toast.makeText(getContext(), rid, Toast.LENGTH_SHORT).show();
 
                         }
+
+                        // 初期化
+                        entityList.clear();
+                        entityValueList.clear();
+                        channelsMap.clear();
+
+                        // summaryに設定
+                        channelPreference.setSummary("");
+                        loadPreference(channelPreference.getSharedPreferences(), CommonConst.KEY_CHANNEL);
+
                     }
 
                 }
