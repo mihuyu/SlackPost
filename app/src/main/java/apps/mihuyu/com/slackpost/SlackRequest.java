@@ -76,13 +76,6 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         return result;
     }
 
-    private String geyKey(String url) {
-        String[] keys = url.split("\\?");
-        String[] keys2 = keys[0].split("\\/");
-        String[] keys3 = keys2[keys2.length - 1].split("\\.");
-        return keys3[0];
-    }
-
     private String getList(String token_val, String base_url_list) {
         String result = null;
 
@@ -130,7 +123,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
                 Log.d("debug","ok:" + json_res.getString("ok"));
 
                 if (Boolean.valueOf(json_res.getString("ok"))) {
-                    String key = this.geyKey(base_url_list);
+                    String key = CommonUtil.geyKeyForURL(base_url_list);
                     Log.d("debug","key:" + key);
                     JSONArray json_res_list = json_res.getJSONArray(key);
                     Log.d("debug", key + ".list:" + json_res_list);

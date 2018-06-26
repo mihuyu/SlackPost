@@ -20,4 +20,14 @@ public class CommonUtil {
 
         return url;
     }
+
+    public static String geyKeyForURL(String url) {
+        if (url == null || "".equals(url)) {
+            return "";
+        }
+        String[] keys = url.split("\\?");
+        String[] keys2 = keys[0].split("\\/");
+        String[] keys3 = keys2[keys2.length - 1].split("\\.");
+        return keys3[0];
+    }
 }
