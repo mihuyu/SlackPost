@@ -18,7 +18,7 @@ create your apps.
 
 5. [Save Changes]
 
-6. [Install App to Warkspace]
+6. [Install App to Workspace]
 
 7. [Authorize]
 
