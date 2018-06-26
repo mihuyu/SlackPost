@@ -106,7 +106,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
 
             try {
                 is = con.getInputStream();
-                String list_res = InputStreamToString(is);
+                String list_res = CommonUtil.InputStreamToString(is);
                 Log.d("debug","search_res:" + list_res);
 
                 JSONObject json_res = new JSONObject(list_res);
@@ -207,7 +207,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
 
             try {
                 is = con.getInputStream();
-                String search_res = InputStreamToString(is);
+                String search_res = CommonUtil.InputStreamToString(is);
                 Log.d("debug","search_res:" + search_res);
 
                 JSONObject json_res = new JSONObject(search_res);
@@ -319,7 +319,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
 
             try {
                 is = con.getInputStream();
-                String postMessage_res = InputStreamToString(is);
+                String postMessage_res = CommonUtil.InputStreamToString(is);
                 Log.d("debug","postMessage_res:" + postMessage_res);
             } catch (IOException ex) {
                 // GETリクエストエラー
@@ -343,18 +343,6 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         }
 
         return result;
-    }
-
-    // InputStream -> String
-    private String InputStreamToString(InputStream is) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            sb.append(line);
-        }
-        br.close();
-        return sb.toString();
     }
 
     // 非同期処理が終了後、結果をメインスレッドに返す
