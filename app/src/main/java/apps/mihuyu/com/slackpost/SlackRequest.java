@@ -18,16 +18,6 @@ import java.util.Map;
 public class SlackRequest extends AsyncTask<String, Void, String> {
 
     /**
-     * Query integration char.
-     */
-    private static final String AND = "&";
-
-    /**
-     * Query Start char
-     */
-    private static final String HATENA = "?";
-
-    /**
      * リスナー
      */
     private Listener listener;
@@ -85,7 +75,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         // channels.list or groups.list
         StringBuilder list = new StringBuilder();
         list.append(base_url_list);
-        list.append(HATENA);
+        list.append(CommonConst.HATENA);
         list.append(token);
         list.append(token_val);
 
@@ -183,10 +173,10 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         String query = CommonConst.QUERY_SEARCHQUERY;
         StringBuilder search_url = new StringBuilder();
         search_url.append(base_url_messages);
-        search_url.append(HATENA);
+        search_url.append(CommonConst.HATENA);
         search_url.append(token);
         search_url.append(token_val);
-        search_url.append(AND);
+        search_url.append(CommonConst.AND);
         search_url.append(query);
         search_url.append(convertUrl);
 
@@ -290,15 +280,15 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         String text = CommonConst.QUERY_TEXT;
         StringBuilder post_url = new StringBuilder();
         post_url.append(base_url_postMessage);
-        post_url.append(HATENA);
+        post_url.append(CommonConst.HATENA);
         post_url.append(token);
         post_url.append(token_val);
-        post_url.append(AND);
+        post_url.append(CommonConst.AND);
         post_url.append(channel);
         post_url.append(channel_id);
-        post_url.append(AND);
+        post_url.append(CommonConst.AND);
         post_url.append(as_user);
-        post_url.append(AND);
+        post_url.append(CommonConst.AND);
         post_url.append(text);
         post_url.append(convertUrl);
 
@@ -378,7 +368,7 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         }
     }
 
-    void setListener(Listener listener) {
+    void setListener(SlackRequest.Listener listener) {
         this.listener = listener;
     }
 
