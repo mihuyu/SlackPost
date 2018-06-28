@@ -22,6 +22,12 @@ public class TransparentActivity extends Activity {
         setContentView(R.layout.transparent_activity);
         getWindow().getDecorView().setBackgroundResource(android.R.color.transparent);
 
+        //ネットワークチェック
+        if (!CommonUtil.chkNetworkConnected(getApplicationContext())) {
+            Toast.makeText(getApplicationContext(), R.string.network_no_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // 非同期処理
         slackRequest = new SlackRequest();
         slackRequest.setListener(createListener());

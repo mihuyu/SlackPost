@@ -65,6 +65,12 @@ public class SettingsActivity extends PreferenceActivity {
         public void onResume() {
             super.onResume();
 
+            //ネットワークチェック
+            if (!CommonUtil.chkNetworkConnected(getContext())) {
+                Toast.makeText(getContext(), R.string.network_no_connected, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             PreferenceScreen screenPref = (PreferenceScreen)findPreference("preferenceScreen");
             PreferenceCategory categoryPref = (PreferenceCategory) screenPref.findPreference("preferenceCategory");
 
@@ -87,6 +93,9 @@ public class SettingsActivity extends PreferenceActivity {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
             String token = sp.getString(CommonConst.KEY_TOKEN, "");
 
+            // 無効化
+            channelPreference.setEnabled(false);
+
             if (token != null && !"".equals(token)) {
                 // summaryに設定
                 loadPreference(tokenPreference.getSharedPreferences(), CommonConst.KEY_TOKEN);
@@ -95,12 +104,7 @@ public class SettingsActivity extends PreferenceActivity {
                     // slack request
                     slackRequestChannels.execute(token, CommonConst.URL_CHANNELS_LIST);
                     slackRequestGroups.execute(token, CommonConst.URL_GROUPS_LIST);
-                    // 有効化
-                    channelPreference.setEnabled(true);
                 }
-            } else {
-                // 無効化
-                channelPreference.setEnabled(false);
             }
 
             sp.registerOnSharedPreferenceChangeListener(this);

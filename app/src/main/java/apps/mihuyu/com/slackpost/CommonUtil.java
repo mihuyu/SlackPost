@@ -1,5 +1,9 @@
 package apps.mihuyu.com.slackpost;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,5 +61,21 @@ public class CommonUtil {
         }
         br.close();
         return sb.toString();
+    }
+
+    /**
+     * ネットワーク接続状態を確認する
+     * @param context
+     * @return 接続可否
+     */
+    public static boolean chkNetworkConnected(Context context){
+        boolean result = false;
+        ConnectivityManager cm =  (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = cm.getActiveNetworkInfo();
+        if( info != null ){
+            result = info.isConnected();
+        }
+
+        return result;
     }
 }
