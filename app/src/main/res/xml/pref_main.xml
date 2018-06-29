@@ -16,11 +16,12 @@
             android:enabled="false"
             android:key="channel_preference"
             android:title="channel" />
+        <!-- valuesに定義すると、lintエラーになるので、defaultValueの値はここで直接記載する。 -->
         <EditTextPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:key="target_url_preference"
-            android:defaultValue="@string/targetUrlDefault"
+            android:defaultValue="https://twitter.com/.+/[0-9]+"
             android:title="targetURL" />
     </PreferenceCategory>
 </PreferenceScreen>
