@@ -47,50 +47,54 @@ public class SlackRequest extends AsyncTask<String, Void, String> {
         String result = "エラー";
 
         //search & post
-        if (params.length == 3) {
+        if (params.length == 4) {
 
             // channels.list or groups.list
             String tokenValue = params[0];
             String channelId = params[1];
-            String apiMethod = params[2];
+            String shareText = params[2];
+            String targetUrl = params[3];
 
             // url変換
-            String convertUrl = CommonUtil.convertTwitterURLPretty(apiMethod);
+            String convertUrl = CommonUtil.convertURLPretty(shareText, targetUrl);
 
-            // 重複Postを避けるため、全体検索→検索結果0件の場合PostMessageを実施する。
-            // search
-            StringBuilder searchUrl = new StringBuilder();
-            searchUrl.append(CommonConst.URL_SEARCH_MESSAGES);
-            searchUrl.append(CommonConst.QUESTION);
-            searchUrl.append(CommonConst.QUERY_TOKEN);
-            searchUrl.append(tokenValue);
-            searchUrl.append(CommonConst.AND);
-            searchUrl.append(CommonConst.QUERY_SEARCH_QUERY);
-            searchUrl.append(convertUrl);
+            String[] convertUrls = convertUrl.split(",");
+            for (String url : convertUrls) {
+                // 重複Postを避けるため、全体検索→検索結果0件の場合PostMessageを実施する。
+                // search
+                StringBuilder searchUrl = new StringBuilder();
+                searchUrl.append(CommonConst.URL_SEARCH_MESSAGES);
+                searchUrl.append(CommonConst.QUESTION);
+                searchUrl.append(CommonConst.QUERY_TOKEN);
+                searchUrl.append(tokenValue);
+                searchUrl.append(CommonConst.AND);
+                searchUrl.append(CommonConst.QUERY_SEARCH_QUERY);
+                searchUrl.append(url);
 
-            Log.d("debug","searchUrl:" + searchUrl.toString());
+                Log.d("debug", "searchUrl:" + searchUrl.toString());
 
-            String jsonRes = this.doSlackAPI(searchUrl.toString());
-            result = this.searchMessages(jsonRes, channelId);
-            if (result == null) {
-                // post message
-                StringBuilder postUrl = new StringBuilder();
-                postUrl.append(CommonConst.URL_CHAT_POST_MESSAGE);
-                postUrl.append(CommonConst.QUESTION);
-                postUrl.append(CommonConst.QUERY_TOKEN);
-                postUrl.append(tokenValue);
-                postUrl.append(CommonConst.AND);
-                postUrl.append(CommonConst.QUERY_CHANNEL);
-                postUrl.append(channelId);
-                postUrl.append(CommonConst.AND);
-                postUrl.append(CommonConst.QUERY_AS_USER);
-                postUrl.append(CommonConst.AND);
-                postUrl.append(CommonConst.QUERY_TEXT);
-                postUrl.append(convertUrl);
+                String jsonRes = this.doSlackAPI(searchUrl.toString());
+                result = this.searchMessages(jsonRes, channelId);
+                if (result == null) {
+                    // post message
+                    StringBuilder postUrl = new StringBuilder();
+                    postUrl.append(CommonConst.URL_CHAT_POST_MESSAGE);
+                    postUrl.append(CommonConst.QUESTION);
+                    postUrl.append(CommonConst.QUERY_TOKEN);
+                    postUrl.append(tokenValue);
+                    postUrl.append(CommonConst.AND);
+                    postUrl.append(CommonConst.QUERY_CHANNEL);
+                    postUrl.append(channelId);
+                    postUrl.append(CommonConst.AND);
+                    postUrl.append(CommonConst.QUERY_AS_USER);
+                    postUrl.append(CommonConst.AND);
+                    postUrl.append(CommonConst.QUERY_TEXT);
+                    postUrl.append(url);
 
-                Log.d("debug","postUrl:" + postUrl.toString());
+                    Log.d("debug", "postUrl:" + postUrl.toString());
 
-                this.doSlackAPI(postUrl.toString());
+                    this.doSlackAPI(postUrl.toString());
+                }
             }
         }
 

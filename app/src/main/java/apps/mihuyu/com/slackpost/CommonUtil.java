@@ -8,26 +8,42 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommonUtil {
 
     /**
-     * twitterの簡易URLに変換する
-     * @param param 変換するURL
-     * @return 変換したURL
+     * 共有するテキストを指定されたものだけに変換する
+     * @param shareText 変換するテキスト
+     * @param targetUrl 共有対象のURL
+     * @return 変換したURL(複数あった場合は、「,」区切りで返す)
      */
-    public static String convertTwitterURLPretty(String param) {
-        String url;
+    public static String convertURLPretty(String shareText, String targetUrl) {
+        StringBuilder url = new StringBuilder("");
 
         // urlのみに変換
-        int startIndex = param.indexOf(CommonConst.HTTP);
-        param = param.substring(startIndex);
-        // URLのqueryを削除する
-        param = param.replaceAll(CommonConst.URL_QUERY_ALL, "");
-        // "/photo/1"を削除する
-        url = param.replaceAll(CommonConst.TWITTER_URL_PHOTO, "");
+        Pattern p = Pattern.compile(targetUrl);
+        Matcher m = p.matcher(shareText);
+        while (m.find()) {
+            if (m.groupCount() != 1 && url.length() != 0) {
+                url.append(",");
+            }
+            url.append(m.group());
+        }
 
-        return url;
+        String replace = url.toString();
+        // URLのqueryを削除する
+        replace = replace.replaceAll(CommonConst.URL_QUERY_ALL, "");
+        // "/photo/1"を削除する
+        replace = replace.replaceAll(CommonConst.TWITTER_URL_PHOTO, "");
+        // "/video/1"を削除する
+        replace = replace.replaceAll(CommonConst.TWITTER_URL_VIDEO, "");
+
+        //再設定
+        url = new StringBuilder(replace);
+
+        return url.toString();
     }
 
     /**

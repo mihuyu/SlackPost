@@ -7,6 +7,7 @@ public class CommonConst {
     public static final String HTTP_MIME_TYPE_TEXT = "text/plain";
 
     public static final String TWITTER_URL_PHOTO = "\\/photo\\/1";
+    public static final String TWITTER_URL_VIDEO = "\\/video\\/1";
     public static final String URL_QUERY_ALL = "\\?.+";
     public static final String URL_QUERY = "\\?";
     public static final String URL_SLASH = "\\/";
@@ -14,6 +15,7 @@ public class CommonConst {
 
     public static final String KEY_CHANNEL = "channel_preference";
     public static final String KEY_TOKEN = "token_preference";
+    public static final String KEY_TARGET_URL = "target_url_preference";
 
     public static final String R_ID = "R_ID=";
     public static final String QUERY_TOKEN = "token=";

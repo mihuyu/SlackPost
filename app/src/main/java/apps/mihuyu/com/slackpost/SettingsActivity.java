@@ -48,6 +48,7 @@ public class SettingsActivity extends PreferenceActivity {
 
         Preference tokenPreference;
         Preference channelPreference;
+        Preference targetUrlPreference;
         List<String> entityList = new ArrayList<>();
         List<String> entityValueList = new ArrayList<>();
         Map<String, String> channelsMap = new HashMap<>();
@@ -87,6 +88,7 @@ public class SettingsActivity extends PreferenceActivity {
             // Preference設定
             tokenPreference = categoryPref.findPreference(CommonConst.KEY_TOKEN);
             channelPreference = categoryPref.findPreference(CommonConst.KEY_CHANNEL);
+            targetUrlPreference = categoryPref.findPreference(CommonConst.KEY_TARGET_URL);
 
             // 初期化
             entityList.clear();
@@ -102,6 +104,7 @@ public class SettingsActivity extends PreferenceActivity {
             // 設定値取得
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
             String token = sp.getString(CommonConst.KEY_TOKEN, "");
+            String targetUrl = sp.getString(CommonConst.KEY_TARGET_URL, "");
 
             // 無効化
             channelPreference.setEnabled(false);
@@ -116,6 +119,10 @@ public class SettingsActivity extends PreferenceActivity {
                     slackRequestGroups.execute(token, CommonConst.URL_GROUPS_LIST);
                 }
             }
+
+            // summaryに設定
+            targetUrlPreference.setSummary(targetUrl);
+            loadPreference(targetUrlPreference.getSharedPreferences(), CommonConst.KEY_TARGET_URL);
 
             sp.registerOnSharedPreferenceChangeListener(this);
 
@@ -134,13 +141,16 @@ public class SettingsActivity extends PreferenceActivity {
         }
 
         private void loadPreference(SharedPreferences sp, String key) {
-            String sharedPreferencesKey = sp.getString(key, "");
+            String sharedPreferencesValue = sp.getString(key, "");
+            if (CommonConst.KEY_TARGET_URL.equals(key)) {
+                targetUrlPreference.setSummary(sharedPreferencesValue);
+            }
             if (CommonConst.KEY_CHANNEL.equals(key)) {
-                channelPreference.setSummary(channelsMap.get(sharedPreferencesKey));
+                channelPreference.setSummary(channelsMap.get(sharedPreferencesValue));
             }
             if (CommonConst.KEY_TOKEN.equals(key)) {
-                tokenPreference.setSummary(sharedPreferencesKey);
-                if (!"".equals(sharedPreferencesKey)) {
+                tokenPreference.setSummary(sharedPreferencesValue);
+                if (!"".equals(sharedPreferencesValue)) {
                     if (AsyncTask.Status.FINISHED.equals(slackRequestChannels.getStatus())) {
                         slackRequestChannels = new SlackRequest();
                         slackRequestChannels.setListener(createListener());
@@ -156,8 +166,8 @@ public class SettingsActivity extends PreferenceActivity {
                         entityValueList.clear();
                         channelsMap.clear();
                         // slack request
-                        slackRequestChannels.execute(sharedPreferencesKey, CommonConst.URL_CHANNELS_LIST);
-                        slackRequestGroups.execute(sharedPreferencesKey, CommonConst.URL_GROUPS_LIST);
+                        slackRequestChannels.execute(sharedPreferencesValue, CommonConst.URL_CHANNELS_LIST);
+                        slackRequestGroups.execute(sharedPreferencesValue, CommonConst.URL_GROUPS_LIST);
                     }
                 }
             }

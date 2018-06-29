@@ -32,7 +32,7 @@ public class TransparentActivity extends Activity {
 
         // param設定
         Intent intent = getIntent();
-        String param = null;
+        String shareText = null;
 
         // Figure out what to do based on the intent type
         if (CommonConst.HTTP_MIME_TYPE_TEXT.equals(intent.getType())) {
@@ -42,7 +42,7 @@ public class TransparentActivity extends Activity {
                 for (int i = 0; i < clip.getItemCount(); i++) {
                     contentText[i] = clip.getItemAt(i).getText();
                 }
-                param = contentText[0].toString();
+                shareText = contentText[0].toString();
             }
         }
 
@@ -50,10 +50,11 @@ public class TransparentActivity extends Activity {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String token = sp.getString(CommonConst.KEY_TOKEN, null);
         String channel = sp.getString(CommonConst.KEY_CHANNEL, null);
+        String targetUrl = sp.getString(CommonConst.KEY_TARGET_URL, null);
 
-        if (token!= null && channel != null) {
+        if (token!= null && channel != null && targetUrl != null) {
             // slack request
-            slackRequest.execute(token, channel, param);
+            slackRequest.execute(token, channel, shareText, targetUrl);
         } else {
             Toast.makeText(getApplicationContext(), R.string.no_post, Toast.LENGTH_SHORT).show();
         }
