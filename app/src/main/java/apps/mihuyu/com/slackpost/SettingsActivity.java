@@ -183,6 +183,11 @@ public class SettingsActivity extends PreferenceActivity {
                         channelPreference.setEnabled(true);
 
                     } else {
+                        if (!channelsMap.isEmpty()) {
+                            // 有効化
+                            channelPreference.setEnabled(true);
+                            return;
+                        }
                         // 無効化
                         channelPreference.setEnabled(false);
 
