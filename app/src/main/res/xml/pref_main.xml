@@ -20,6 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:key="target_url_preference"
+            android:defaultValue="@string/targetUrlDefault"
             android:title="targetURL" />
     </PreferenceCategory>
 </PreferenceScreen>
