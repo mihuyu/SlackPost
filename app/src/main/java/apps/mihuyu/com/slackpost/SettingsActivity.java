@@ -76,7 +76,7 @@ public class SettingsActivity extends PreferenceActivity {
             super.onResume();
 
             //ネットワークチェック
-            if (!CommonUtil.chkNetworkConnected(getContext())) {
+            if (CommonUtil.isNetworkNoConnected(getContext())) {
                 Toast.makeText(getContext(), R.string.network_no_connected, Toast.LENGTH_SHORT).show();
                 return;
             }

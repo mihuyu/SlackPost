@@ -14,8 +14,6 @@ import java.util.Map;
 
 public class TransparentActivity extends Activity {
 
-    private SlackRequest slackRequest;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,13 +21,13 @@ public class TransparentActivity extends Activity {
         getWindow().getDecorView().setBackgroundResource(android.R.color.transparent);
 
         //ネットワークチェック
-        if (!CommonUtil.chkNetworkConnected(getApplicationContext())) {
+        if (CommonUtil.isNetworkNoConnected(getApplicationContext())) {
             Toast.makeText(getApplicationContext(), R.string.network_no_connected, Toast.LENGTH_SHORT).show();
             return;
         }
 
         // 非同期処理
-        slackRequest = new SlackRequest();
+        SlackRequest slackRequest = new SlackRequest();
         slackRequest.setListener(createListener());
 
         // param設定
@@ -37,13 +35,15 @@ public class TransparentActivity extends Activity {
         String param = null;
 
         // Figure out what to do based on the intent type
-        if (intent.getType().equals("text/plain")) {
+        if (CommonConst.HTTP_MIME_TYPE_TEXT.equals(intent.getType())) {
             ClipData clip = intent.getClipData();
-            CharSequence[] contentText = new CharSequence[clip.getItemCount()];
-            for (int i = 0; i < clip.getItemCount(); i++) {
-                contentText[i] = clip.getItemAt(i).getText();
+            if (clip != null) {
+                CharSequence[] contentText = new CharSequence[clip.getItemCount()];
+                for (int i = 0; i < clip.getItemCount(); i++) {
+                    contentText[i] = clip.getItemAt(i).getText();
+                }
+                param = contentText[0].toString();
             }
-            param = contentText[0].toString();
         }
 
         // 設定値取得

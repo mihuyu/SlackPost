@@ -20,36 +20,36 @@ public class CommonUtil {
         String url;
 
         // urlのみに変換
-        int startIndex = param.indexOf("http");
+        int startIndex = param.indexOf(CommonConst.HTTP);
         param = param.substring(startIndex);
         // URLのqueryを削除する
-        param = param.replaceAll("\\?.+", "");
+        param = param.replaceAll(CommonConst.URL_QUERY_ALL, "");
         // "/photo/1"を削除する
-        url = param.replaceAll("\\/photo\\/1", "");
+        url = param.replaceAll(CommonConst.TWITTER_URL_PHOTO, "");
 
         return url;
     }
 
     /**
      * slack method name.
-     * @param url
+     * @param url String
      * @return key
      */
     public static String geyKeyForURL(String url) {
         if (url == null || "".equals(url)) {
             return "";
         }
-        String[] keys = url.split("\\?");
-        String[] keys2 = keys[0].split("\\/");
-        String[] keys3 = keys2[keys2.length - 1].split("\\.");
+        String[] keys = url.split(CommonConst.URL_QUERY);
+        String[] keys2 = keys[0].split(CommonConst.URL_SLASH);
+        String[] keys3 = keys2[keys2.length - 1].split(CommonConst.URL_DOT);
         return keys3[0];
     }
 
     /**
      * InputStream -> String
-     * @param is
+     * @param is InputStream
      * @return String
-     * @throws IOException
+     * @throws IOException IOException
      */
     public static String InputStreamToString(InputStream is) throws IOException {
         StringBuilder sb = new StringBuilder();
@@ -64,16 +64,19 @@ public class CommonUtil {
     }
 
     /**
-     * ネットワーク接続状態を確認する
-     * @param context
-     * @return 接続可否
+     * ネットワークに接続していない状態かを確認する
+     * @param context Context
+     * @return 接続不可:true/接続可能:false
      */
-    public static boolean chkNetworkConnected(Context context){
-        boolean result = false;
+    public static boolean isNetworkNoConnected(Context context) {
+        boolean result = true;
         ConnectivityManager cm =  (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo info = cm.getActiveNetworkInfo();
-        if( info != null ){
-            result = info.isConnected();
+
+        if (cm != null) {
+            NetworkInfo info = cm.getActiveNetworkInfo();
+            if (info != null) {
+                result = !info.isConnected();
+            }
         }
 
         return result;
