@@ -11,6 +11,9 @@ import android.widget.Toast;
 
 import java.util.Map;
 
+import apps.mihuyu.com.slackpost.common.CommonConst;
+import apps.mihuyu.com.slackpost.common.CommonUtil;
+
 
 public class TransparentActivity extends Activity {
 

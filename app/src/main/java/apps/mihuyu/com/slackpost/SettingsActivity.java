@@ -1,5 +1,6 @@
 package apps.mihuyu.com.slackpost;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,26 +12,66 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import apps.mihuyu.com.slackpost.common.CommonConst;
+import apps.mihuyu.com.slackpost.common.CommonUtil;
+
 public class SettingsActivity extends PreferenceActivity {
+
+    private static MainPreferenceFragment mainPreferenceFragment;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
+            mainPreferenceFragment = new MainPreferenceFragment();
             getFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, new MainPreferenceFragment())
+                    .replace(android.R.id.content, mainPreferenceFragment)
                     .commit();
         }
 
+    }
+
+    // メニューをActivity上に設置する
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // 参照するリソースは上でリソースファイルに付けた名前と同じもの
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // メニューが選択されたときの処理
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_sync:
+
+                // 非同期処理実行可
+                mainPreferenceFragment.syncChannelsFlg = true;
+
+                // 呼び出し
+                String token = mainPreferenceFragment.getSharedPreferencesValue(CommonConst.KEY_TOKEN);
+                mainPreferenceFragment.doExecute(token);
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -51,7 +92,9 @@ public class SettingsActivity extends PreferenceActivity {
         Preference targetUrlPreference;
         List<String> entityList = new ArrayList<>();
         List<String> entityValueList = new ArrayList<>();
-        Map<String, String> channelsMap = new HashMap<>();
+        LinkedHashMap<String, String> channelsMap = new LinkedHashMap<>();
+
+        boolean syncChannelsFlg = false;
 
         private SlackRequest slackRequestChannels;
         private SlackRequest slackRequestGroups;
@@ -65,22 +108,6 @@ public class SettingsActivity extends PreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_main);
             setRetainInstance(true);
-        }
-
-        @Override
-        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-
-            //ネットワークチェック
-            if (CommonUtil.isNetworkNoConnected(getContext())) {
-                Toast.makeText(getContext(), R.string.network_no_connected, Toast.LENGTH_SHORT).show();
-                return;
-            }
 
             PreferenceScreen screenPref = (PreferenceScreen)findPreference("preferenceScreen");
             PreferenceCategory categoryPref = (PreferenceCategory) screenPref.findPreference("preferenceCategory");
@@ -106,17 +133,42 @@ public class SettingsActivity extends PreferenceActivity {
             String token = sp.getString(CommonConst.KEY_TOKEN, "");
             String targetUrl = sp.getString(CommonConst.KEY_TARGET_URL, "");
 
-            // 無効化
-            channelPreference.setEnabled(false);
-
             if (!"".equals(token)) {
                 // summaryに設定
                 loadPreference(tokenPreference.getSharedPreferences(), CommonConst.KEY_TOKEN);
-                if (AsyncTask.Status.PENDING.equals(slackRequestChannels.getStatus()) &&
-                        AsyncTask.Status.PENDING.equals(slackRequestGroups.getStatus())) {
-                    // slack request
-                    slackRequestChannels.execute(token, CommonConst.URL_CHANNELS_LIST);
-                    slackRequestGroups.execute(token, CommonConst.URL_GROUPS_LIST);
+            }
+
+            Map<String, ?> map = getActivity().getSharedPreferences(CommonConst.KEY_CHANNEL_LIST, Context.MODE_PRIVATE).getAll();
+            if (map != null && map.size() > 0) {
+                try {
+                    String obj = (String) map.get(CommonConst.KEY_CHANNEL_LIST);
+                    JSONObject json = new JSONObject(obj);
+                    Iterator<String> iterator = json.keys();
+                    while (iterator.hasNext()) {
+                        String key = iterator.next();
+                        entityList.add((String)json.get(key));
+                        entityValueList.add(key);
+                        channelsMap.put(key, (String)json.get(key));
+                    }
+                } catch (JSONException ex) {
+                    ex.printStackTrace();
+                }
+
+                if (!channelsMap.isEmpty()) {
+                    String[] entities = entityList.toArray(new String[entityList.size()]);
+                    String[] entityValues = entityValueList.toArray(new String[entityValueList.size()]);
+                    ListPreference listPreference = (ListPreference) channelPreference;
+                    listPreference.setEntries(entities);
+                    listPreference.setEntryValues(entityValues);
+
+                    // summaryに設定
+                    loadPreference(channelPreference.getSharedPreferences(), CommonConst.KEY_CHANNEL);
+
+                    // 有効化
+                    channelPreference.setEnabled(true);
+                } else {
+                    // 無効化
+                    channelPreference.setEnabled(false);
                 }
             }
 
@@ -129,6 +181,22 @@ public class SettingsActivity extends PreferenceActivity {
         }
 
         @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+        }
+
+        public String getSharedPreferencesValue(String key) {
+            // 設定値取得
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+            return sp.getString(key, "");
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+        }
+
+        @Override
         public void onPause() {
             super.onPause();
             SharedPreferences sp = getPreferenceScreen().getSharedPreferences();
@@ -136,7 +204,23 @@ public class SettingsActivity extends PreferenceActivity {
         }
 
         @Override
+        public void onStop() {
+            super.onStop();
+            if (slackRequestChannels != null &&
+                    AsyncTask.Status.RUNNING.equals(slackRequestChannels.getStatus())) {
+                slackRequestChannels.cancel(true);
+            }
+            if (slackRequestChannels != null &&
+                    AsyncTask.Status.RUNNING.equals(slackRequestChannels.getStatus())) {
+                slackRequestChannels.cancel(true);
+            }
+        }
+
+        @Override
         public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (CommonConst.KEY_TOKEN.equals(key)) {
+                syncChannelsFlg = true;
+            }
             loadPreference(sharedPreferences, key);
         }
 
@@ -150,27 +234,44 @@ public class SettingsActivity extends PreferenceActivity {
             }
             if (CommonConst.KEY_TOKEN.equals(key)) {
                 tokenPreference.setSummary(sharedPreferencesValue);
-                if (!"".equals(sharedPreferencesValue)) {
-                    if (AsyncTask.Status.FINISHED.equals(slackRequestChannels.getStatus())) {
-                        slackRequestChannels = new SlackRequest();
-                        slackRequestChannels.setListener(createListener());
-                    }
-                    if (AsyncTask.Status.FINISHED.equals(slackRequestGroups.getStatus())) {
-                        slackRequestGroups = new SlackRequest();
-                        slackRequestGroups.setListener(createListener());
-                    }
-                    if (AsyncTask.Status.PENDING.equals(slackRequestChannels.getStatus()) &&
-                            AsyncTask.Status.PENDING.equals(slackRequestGroups.getStatus())) {
-                        // 初期化
-                        entityList.clear();
-                        entityValueList.clear();
-                        channelsMap.clear();
-                        // slack request
-                        slackRequestChannels.execute(sharedPreferencesValue, CommonConst.URL_CHANNELS_LIST);
-                        slackRequestGroups.execute(sharedPreferencesValue, CommonConst.URL_GROUPS_LIST);
-                    }
+                if (syncChannelsFlg && !"".equals(sharedPreferencesValue)) {
+                    // 呼び出し
+                    this.doExecute(sharedPreferencesValue);
                 }
+
+                syncChannelsFlg = false;
             }
+        }
+
+        protected void doExecute(String sharedPreferencesValue) {
+            if (AsyncTask.Status.FINISHED.equals(slackRequestChannels.getStatus())) {
+                slackRequestChannels = new SlackRequest();
+                slackRequestChannels.setListener(createListener());
+            }
+            if (AsyncTask.Status.FINISHED.equals(slackRequestGroups.getStatus())) {
+                slackRequestGroups = new SlackRequest();
+                slackRequestGroups.setListener(createListener());
+            }
+            if (AsyncTask.Status.PENDING.equals(slackRequestChannels.getStatus()) &&
+                    AsyncTask.Status.PENDING.equals(slackRequestGroups.getStatus())) {
+
+                //ネットワークチェック
+                if (CommonUtil.isNetworkNoConnected(getContext())) {
+                    Toast.makeText(getContext(), R.string.network_no_connected, Toast.LENGTH_SHORT).show();
+                    syncChannelsFlg = false;
+                    return;
+                }
+
+                // 初期化
+                entityList.clear();
+                entityValueList.clear();
+                channelsMap.clear();
+
+                // slack request
+                slackRequestChannels.execute(sharedPreferencesValue, CommonConst.URL_CHANNELS_LIST);
+                slackRequestGroups.execute(sharedPreferencesValue, CommonConst.URL_GROUPS_LIST);
+            }
+
         }
 
         private SlackRequest.Listener createListener() {
@@ -181,6 +282,7 @@ public class SettingsActivity extends PreferenceActivity {
                     if (result == null) {
                         // 有効化
                         channelPreference.setEnabled(true);
+                        Toast.makeText(getContext(), R.string.channel_sync_complete, Toast.LENGTH_SHORT).show();
 
                     } else {
                         if (!channelsMap.isEmpty()) {
@@ -234,10 +336,15 @@ public class SettingsActivity extends PreferenceActivity {
                         // summaryに設定
                         loadPreference(channelPreference.getSharedPreferences(), CommonConst.KEY_CHANNEL);
 
+                        SharedPreferences sp = getActivity().getSharedPreferences(CommonConst.KEY_CHANNEL_LIST, Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sp.edit();
+                        JSONObject json = (JSONObject) JSONObject.wrap(channelsMap);
+                        editor.putString(CommonConst.KEY_CHANNEL_LIST, json.toString());
+                        editor.apply();
+
                     }
                 }
             };
         }
-
     }
 }

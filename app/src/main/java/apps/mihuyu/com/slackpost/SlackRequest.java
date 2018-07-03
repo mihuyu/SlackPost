@@ -13,6 +13,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import apps.mihuyu.com.slackpost.common.CommonConst;
+import apps.mihuyu.com.slackpost.common.CommonUtil;
+
 public class SlackRequest extends AsyncTask<String, Void, String> {
 
     /**

@@ -1,4 +1,4 @@
-package apps.mihuyu.com.slackpost;
+package apps.mihuyu.com.slackpost.common;
 
 public class CommonConst {
 
@@ -16,6 +16,7 @@ public class CommonConst {
     public static final String KEY_CHANNEL = "channel_preference";
     public static final String KEY_TOKEN = "token_preference";
     public static final String KEY_TARGET_URL = "target_url_preference";
+    public static final String KEY_CHANNEL_LIST = "channel_list_preference";
 
     public static final String R_ID = "R_ID=";
     public static final String QUERY_TOKEN = "token=";

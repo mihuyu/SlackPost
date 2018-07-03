@@ -1,4 +1,4 @@
-package apps.mihuyu.com.slackpost;
+package apps.mihuyu.com.slackpost.common;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import apps.mihuyu.com.slackpost.common.CommonConst;
 
 public class CommonUtil {
 
@@ -86,12 +88,15 @@ public class CommonUtil {
      */
     public static boolean isNetworkNoConnected(Context context) {
         boolean result = true;
-        ConnectivityManager cm =  (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        if (cm != null) {
-            NetworkInfo info = cm.getActiveNetworkInfo();
-            if (info != null) {
-                result = !info.isConnected();
+        if (context != null) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            if (cm != null) {
+                NetworkInfo info = cm.getActiveNetworkInfo();
+                if (info != null) {
+                    result = !info.isConnected();
+                }
             }
         }
 
