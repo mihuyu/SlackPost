@@ -67,6 +67,8 @@ public class ChooseTransparentActivity extends AppCompatActivity {
             }
         }
 
+        // ボタンクリックしたてい。
+        button.performClick();
     }
 
     public void onPost(String channel) {
@@ -120,5 +122,9 @@ public class ChooseTransparentActivity extends AppCompatActivity {
 
             }
         };
+    }
+
+    public void finishActivity() {
+        finishAndRemoveTask();
     }
 }

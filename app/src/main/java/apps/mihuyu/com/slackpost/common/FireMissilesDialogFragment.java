@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -50,6 +51,7 @@ public class FireMissilesDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
                 // User cancelled the dialog
                 mDialog.dismiss();
+                ((ChooseTransparentActivity)mContext).finishActivity();
             }
         });
 
@@ -85,13 +87,26 @@ public class FireMissilesDialogFragment extends DialogFragment {
                 String selected = entityValues[which];
                 ((ChooseTransparentActivity)mContext).onPost(selected);
                 mDialog.dismiss();
+                ((ChooseTransparentActivity)mContext).finishActivity();
             }
 
         });
         builder.setView(lv);
         // Create the AlertDialog object and return it
         mDialog = builder.create();
-        mDialog.setCanceledOnTouchOutside(true);
+        mDialog.setCanceledOnTouchOutside(false);
+        mDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialogInterface, int keyCode, KeyEvent keyEvent) {
+                if (keyEvent.getAction() == KeyEvent.ACTION_UP &&
+                        keyCode == KeyEvent.KEYCODE_BACK) {
+                    mDialog.dismiss();
+                    ((ChooseTransparentActivity)mContext).finishActivity();
+                    return false;
+                }
+                return false;
+            }
+        });
 
         return mDialog;
     }
@@ -99,7 +114,6 @@ public class FireMissilesDialogFragment extends DialogFragment {
     @Override
     public void onPause() {
         super.onPause();
-        mDialog.dismiss();
     }
 
     @Override
