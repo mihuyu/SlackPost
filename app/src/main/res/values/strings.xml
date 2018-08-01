@@ -14,5 +14,6 @@
 
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_ok">OK</string>
-    <string name="dialog_fire_missiles">確認</string>
+    <string name="dialog_fire_missiles">チャンネル選択</string>
+    <string name="dialog_no_channel_list">チャンネル一覧が取得できませんでした。\n設定画面のメニューからチャンネル一覧を同期してください。\n設定画面を開く場合は「OK」を選択してください。</string>
 </resources>

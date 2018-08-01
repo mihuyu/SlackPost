@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import apps.mihuyu.com.slackpost.ChooseTransparentActivity;
 import apps.mihuyu.com.slackpost.R;
+import apps.mihuyu.com.slackpost.SettingsActivity;
 
 public class FireMissilesDialogFragment extends DialogFragment {
 
@@ -46,7 +48,6 @@ public class FireMissilesDialogFragment extends DialogFragment {
             mContext = getActivity();
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setMessage(R.string.dialog_fire_missiles);
         builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User cancelled the dialog
@@ -57,7 +58,6 @@ public class FireMissilesDialogFragment extends DialogFragment {
 
         List<String> entityList = new ArrayList<>();
         List<String> entityValueList = new ArrayList<>();
-//        LinkedHashMap<String, String> channelsMap = new LinkedHashMap<>();
         Map<String, ?> map = mContext.getSharedPreferences(CommonConst.KEY_CHANNEL_LIST, Context.MODE_PRIVATE).getAll();
         if (map != null && map.size() > 0) {
             try {
@@ -68,30 +68,46 @@ public class FireMissilesDialogFragment extends DialogFragment {
                     String key = iterator.next();
                     entityList.add((String) json.get(key));
                     entityValueList.add(key);
-//                    channelsMap.put(key, (String) json.get(key));
                 }
             } catch (JSONException ex) {
                 ex.printStackTrace();
             }
-
         }
 
         final String[] entityValues = entityValueList.toArray( new String[ entityValueList.size() ] );
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, entityList);
-        ListView lv = new ListView(mContext);
-        lv.setAdapter(arrayAdapter);
-        lv.setScrollingCacheEnabled(true);
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int which, long l) {
-                String selected = entityValues[which];
-                ((ChooseTransparentActivity)mContext).onPost(selected);
-                mDialog.dismiss();
-                ((ChooseTransparentActivity)mContext).finishActivity();
-            }
 
-        });
-        builder.setView(lv);
+        // Channel一覧設定
+        if (entityValues.length != 0) {
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(mContext, android.R.layout.simple_list_item_1, entityList);
+            ListView lv = new ListView(mContext);
+            lv.setAdapter(arrayAdapter);
+            lv.setScrollingCacheEnabled(true);
+            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int which, long l) {
+                    String selected = entityValues[which];
+                    ((ChooseTransparentActivity)mContext).onPost(selected);
+                    mDialog.dismiss();
+                    ((ChooseTransparentActivity)mContext).finishActivity();
+                }
+
+            });
+            builder.setView(lv);
+            builder.setMessage(R.string.dialog_fire_missiles);
+        } else {
+            builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // User cancelled the dialog
+                    mDialog.dismiss();
+                    ((ChooseTransparentActivity)mContext).finishActivity();
+                    Intent intent = new Intent();
+                    intent.setClassName(mContext, SettingsActivity.class.getName());
+                    startActivity(intent);
+                }
+            });
+            builder.setMessage(R.string.dialog_no_channel_list);
+        }
+
         // Create the AlertDialog object and return it
         mDialog = builder.create();
         mDialog.setCanceledOnTouchOutside(false);
