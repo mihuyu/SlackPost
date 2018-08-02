@@ -11,8 +11,6 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import apps.mihuyu.com.slackpost.common.CommonConst;
-
 public class CommonUtil {
 
     /**

@@ -2,7 +2,6 @@ package apps.mihuyu.com.slackpost.common;
 
 public class CommonConst {
 
-    public static final String HTTP = "http";
     public static final String HTTP_GET = "GET";
     public static final String HTTP_MIME_TYPE_TEXT = "text/plain";
 

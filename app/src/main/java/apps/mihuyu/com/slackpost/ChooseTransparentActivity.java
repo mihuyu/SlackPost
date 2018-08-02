@@ -16,7 +16,6 @@ import java.util.Map;
 
 import apps.mihuyu.com.slackpost.common.CommonConst;
 import apps.mihuyu.com.slackpost.common.CommonUtil;
-import apps.mihuyu.com.slackpost.common.FireMissilesDialogFragment;
 
 
 public class ChooseTransparentActivity extends AppCompatActivity {

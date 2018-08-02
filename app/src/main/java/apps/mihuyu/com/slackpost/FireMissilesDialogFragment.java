@@ -1,4 +1,4 @@
-package apps.mihuyu.com.slackpost.common;
+package apps.mihuyu.com.slackpost;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -22,9 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import apps.mihuyu.com.slackpost.ChooseTransparentActivity;
-import apps.mihuyu.com.slackpost.R;
-import apps.mihuyu.com.slackpost.SettingsActivity;
+import apps.mihuyu.com.slackpost.common.CommonConst;
 
 public class FireMissilesDialogFragment extends DialogFragment {
 
@@ -88,7 +86,6 @@ public class FireMissilesDialogFragment extends DialogFragment {
                     String selected = entityValues[which];
                     ((ChooseTransparentActivity)mContext).onPost(selected);
                     mDialog.dismiss();
-                    ((ChooseTransparentActivity)mContext).finishActivity();
                 }
 
             });
