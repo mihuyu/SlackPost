@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -80,6 +81,7 @@ public class ChooseTransparentActivity extends AppCompatActivity {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String token = sp.getString(CommonConst.KEY_TOKEN, null);
 //        String channel = sp.getString(CommonConst.KEY_CHANNEL, null);
+        Log.d("debug", "channel:" + channel);
         String targetUrl = sp.getString(CommonConst.KEY_TARGET_URL, null);
 
         if (token!= null && channel != null && targetUrl != null) {
